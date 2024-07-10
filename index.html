@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Responsivo com Slideshow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden; /* Evita a rolagem horizontal */
+            position: relative; /* Posição relativa para o body */
+        }
+        .navbar {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-around; /* Centraliza os itens */
+            padding: 10px 20px; /* Ajuste do padding */
+            background: rgb(4, 21, 54); /* Cor de fundo */
+            z-index: 1; /* Garante que está acima do slideshow */
+        }
+        .navbar img {
+            height: 30px; /* Altura das imagens de bandeira */
+            width: auto; /* Largura automática */
+            margin-left: 5px;
+            cursor: pointer; /* Cursor alterado para indicar clique */
+        }
+        .navbar a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 5px 8px; /* Padding interno ajustado */
+            text-decoration: none;
+            box-sizing: border-box;
+            font-size: 16px; /* Tamanho da fonte reduzido */
+            font-weight: bold;
+            margin: 0; /* Remove o margin padrão */
+        }
+        .navbar a:hover {
+            background-color: #992619; /* Cor de fundo ao passar o mouse */
+        }
+        .navbar .icon {
+            display: none;
+        }
+        .lang-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .lang-dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: transparent; /* Cor de fundo transparente */
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            overflow: hidden; /* Esconde o conteúdo que excede as dimensões */
+            top: 40px; /* Ajusta a distância do topo */
+            right: 0; /* Alinha o dropdown à direita */
+        }
+        .lang-dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+            background-color: transparent; /* Remove o fundo branco */
+        }
+        .lang-dropdown-content a:hover {
+            background-color: #f1f1f1; /* Cor de fundo ao passar o mouse */
+        }
+        .lang-dropdown:hover .lang-dropdown-content {
+            display: block;
+        }
+        .slideshow-container {
+            position: relative;
+            max-width: 100%;
+            margin: auto;
+            overflow: hidden;
+            z-index: 0; /* Garante que está abaixo da navbar */
+        }
+        .mySlides {
+            display: none;
+            position: relative;
+        }
+        .mySlides img {
+            width: 100%;
+            height: 834px; /* Altura do slideshow ajustada */
+            object-fit: cover;
+        }
+        .prev, .next {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            width: auto;
+            padding: 16px;
+            margin-top: -22px;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            transition: 0.6s ease;
+            border-radius: 0 3px 3px 0;
+            user-select: none;
+            z-index: 2; /* Garante que está acima do slideshow */
+        }
+        .next {
+            right: 0;
+            border-radius: 3px 0 0 3px;
+        }
+        .prev:hover, .next:hover {
+            background-color: rgba(0,0,0,0.8);
+        }
+        .dot {
+            cursor: pointer;
+            height: 15px;
+            width: 15px;
+            margin: 0 2px;
+            background-color: #bbb;
+            border-radius: 50%;
+            display: inline-block;
+            transition: background-color 0.6s ease;
+        }
+        .active, .dot:hover {
+            background-color: #717171;
+        }
+        .fade {
+            animation-name: fade;
+            animation-duration: 1.5s;
+        }
+        .logo-container {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            z-index: 3; /* Garante que está acima do slideshow e das setas */
+        }
+        .logo-container img {
+            width: 200px; /* Tamanho da imagem do logo */
+            height: 200px;
+            object-fit: contain; /* Mantém a proporção da imagem */
+        }
+        .buttons {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 2; /* Garante que está acima do slide */
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #992619; /* Vermelho */
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin: 10px;
+        }
+        .button:hover {
+            transform: scale(1.1); /* Efeito de zoom */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Sombra ao redor */
+        }
+        .caption {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            font-style: italic;
+            font-size: 44px;
+            color: white;
+            z-index: 2;
+            width: 80%; /* Ajuste da largura para não ultrapassar */
+        }
+        /* Estilos para a imagem fixa abaixo do slideshow */
+        .fixed-image {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: -1; /* Coloca a imagem fixa abaixo de todos os outros elementos */
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar" id="myNavbar">
+    <a id="quem-somos" href="#home">Quem Somos</a>
+    <a id="servicos" href="#services">Serviços</a>
+    <a id="traducao" href="#translation">Tradução de Idiomas</a>
+    <a id="compliance" href="#compliance">Compliance</a>
+    <a id="blog" href="#blog">Blog</a>
+    <a id="contato" href="#contact">Contato</a>
+    <div class="lang-dropdown">
+        <img src="brasil.png" alt="Português" onmouseover="toggleLangDropdown(true)" onmouseout="toggleLangDropdown(false)" onclick="changeLanguage('pt-br')">
+        <div class="lang-dropdown-content" id="langDropdown" onmouseover="toggleLangDropdown(true)" onmouseout="toggleLangDropdown(false)">
+            <a href="#" onclick="changeLanguage('en')">
+                <img src="eua.png" alt="Inglês">
+            </a>
+            <a href="#" onclick="changeLanguage('es')">
+                <img src="espanha.png" alt="Espanhol">
+            </a>
+        </div>
+    </div>
+    <a href="javascript:void(0);" class="icon" onclick="toggleMenu()">
+        &#9776;
+    </a>
+</div>
+
+<div class="slideshow-container">
+    <div class="mySlides fade">
+        <img src="1.avif" alt="Slide 1">
+        <div class="buttons">
+            <a href="#" class="button zoom-effect" id="btn-orcamento1">Solicitar Orçamento</a>
+            <a href="#" class="button zoom-effect" id="btn-saiba-mais1">Saiba Mais</a>
+        </div>
+        <div class="caption" id="caption-text">Desde 1970 traduzindo eficiência</div>
+    </div>
+    <div class="mySlides fade">
+        <img src="2.avif" alt="Slide 2">
+        <div class="buttons">
+            <a href="#" class="button zoom-effect" id="btn-orcamento2">Solicitar Orçamento</a>
+            <a href="#" class="button zoom-effect" id="btn-saiba-mais2">Saiba Mais</a>
+        </div>
+        <div class="caption" id="caption-text">Desde 1970 traduzindo eficiência</div>
+    </div>
+    <div class="mySlides fade">
+        <img src="3.jpg" alt="Slide 3">
+        <div class="buttons">
+            <a href="#" class="button zoom-effect" id="btn-orcamento3">Solicitar Orçamento</a>
+            <a href="#" class="button zoom-effect" id="btn-saiba-mais3">Saiba Mais</a>
+        </div>
+        <div class="caption" id="caption-text">Desde 1970 traduzindo eficiência</div>
+    </div>
+
+    <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+    <a class="next" onclick="plusSlides(1)">&#10095;</a>
+
+    <div class="logo-container">
+        <img src="logo.png" alt="Logo">
+    </div>
+</div>
+
+<br>
+
+<div style="text-align:center">
+    <span class="dot" onclick="currentSlide(1)"></span> 
+    <span class="dot" onclick="currentSlide(2)"></span> 
+    <span class="dot" onclick="currentSlide(3)"></span> 
+</div>
+
+<script>
+    let slideIndex = 0;
+    showSlides();
+
+    function showSlides() {
+        let i;
+        let slides = document.getElementsByClassName("mySlides");
+        let dots = document.getElementsByClassName("dot");
+        for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = "none";  
+        }
+        slideIndex++;
+        if (slideIndex > slides.length) {slideIndex = 1}    
+        for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(" active", "");
+        }
+        slides[slideIndex-1].style.display = "block";  
+        dots[slideIndex-1].className += " active";
+        setTimeout(showSlides, 3000); // Troca de imagem a cada 3 segundos
+    }
+
+    function plusSlides(n) {
+        slideIndex += n - 1;
+        showSlides();
+    }
+
+    function currentSlide(n) {
+        slideIndex = n - 1;
+        showSlides();
+    }
+
+    let timeoutId;
+
+    function toggleLangDropdown(open) {
+        var dropdown = document.getElementById("langDropdown");
+        clearTimeout(timeoutId);
+        if (open) {
+            dropdown.style.display = "block";
+        } else {
+            timeoutId = setTimeout(function() {
+                dropdown.style.display = "none";
+            }, 5000); // Oculta o dropdown após 5 segundos
+        }
+    }
+
+    function toggleMenu() {
+        var x = document.getElementById("myNavbar");
+        if (x.className === "navbar") {
+            x.className += " responsive";
+        } else {
+            x.className = "navbar";
+        }
+    }
+
+    function changeLanguage(lang) {
+        var dropdown = document.getElementById("langDropdown");
+        dropdown.style.display = "none"; // Esconde o dropdown ao selecionar uma linguagem
+
+        if (lang === 'pt-br') {
+            // Português
+            document.getElementById('quem-somos').textContent = 'Quem Somos';
+            document.getElementById('servicos').textContent = 'Serviços';
+            document.getElementById('traducao').textContent = 'Tradução de Idiomas';
+            document.getElementById('compliance').textContent = 'Compliance';
+            document.getElementById('blog').textContent = 'Blog';
+            document.getElementById('contato').textContent = 'Contato';
+
+            // Tradução dos botões e do texto do slideshow
+            document.getElementById('btn-orcamento1').textContent = 'Solicitar Orçamento';
+            document.getElementById('btn-saiba-mais1').textContent = 'Saiba Mais';
+            document.getElementById('btn-orcamento2').textContent = 'Solicitar Orçamento';
+            document.getElementById('btn-saiba-mais2').textContent = 'Saiba Mais';
+            document.getElementById('btn-orcamento3').textContent = 'Solicitar Orçamento';
+            document.getElementById('btn-saiba-mais3').textContent = 'Saiba Mais';
+            document.getElementById('caption-text').textContent = 'Desde 1970 traduzindo eficiência';
+
+        } else if (lang === 'en') {
+            // Inglês
+            document.getElementById('quem-somos').textContent = 'About Us';
+            document.getElementById('servicos').textContent = 'Services';
+            document.getElementById('traducao').textContent = 'Language Translation';
+            document.getElementById('compliance').textContent = 'Compliance';
+            document.getElementById('blog').textContent = 'Blog';
+            document.getElementById('contato').textContent = 'Contact';
+
+            // Tradução dos botões e do texto do slideshow
+            document.getElementById('btn-orcamento1').textContent = 'Request a Quote';
+            document.getElementById('btn-saiba-mais1').textContent = 'Learn More';
+            document.getElementById('btn-orcamento2').textContent = 'Request a Quote';
+            document.getElementById('btn-saiba-mais2').textContent = 'Learn More';
+            document.getElementById('btn-orcamento3').textContent = 'Request a Quote';
+            document.getElementById('btn-saiba-mais3').textContent = 'Learn More';
+            document.getElementById('caption-text').textContent = 'Since 1970 translating efficiency';
+
+        } else if (lang === 'es') {
+            // Espanhol
+            document.getElementById('quem-somos').textContent = 'Quiénes Somos';
+            document.getElementById('servicos').textContent = 'Servicios';
+            document.getElementById('traducao').textContent = 'Traducción de Idiomas';
+            document.getElementById('compliance').textContent = 'Cumplimiento';
+            document.getElementById('blog').textContent = 'Blog';
+            document.getElementById('contato').textContent = 'Contacto';
+
+            // Tradução dos botões e do texto do slideshow
+            document.getElementById('btn-orcamento1').textContent = 'Solicitar Presupuesto';
+            document.getElementById('btn-saiba-mais1').textContent = 'Saber Más';
+            document.getElementById('btn-orcamento2').textContent = 'Solicitar Presupuesto';
+            document.getElementById('btn-saiba-mais2').textContent = 'Saber Más';
+            document.getElementById('btn-orcamento3').textContent = 'Solicitar Presupuesto';
+            document.getElementById('btn-saiba-mais3').textContent = 'Saber Más';
+            document.getElementById('caption-text').textContent = 'Desde 1970 traduciendo eficiencia';
+        }
+
+        // Aqui você adiciona as traduções para os demais elementos da página, se houver
+        // Exemplo:
+        // document.getElementById('titulo').textContent = 'Novo Título';
+        // document.getElementById('paragrafo').textContent = 'Novo texto traduzido...';
+    }
+</script>
+<!-- Imagem fixa abaixo do slideshow -->
+<img src="parc.png" alt="Imagem Parc" style="right: -340px; position:relative ;">
+</body>
+</html>
